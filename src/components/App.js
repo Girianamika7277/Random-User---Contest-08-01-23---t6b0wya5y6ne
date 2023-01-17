@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useState, useEffect} from 'react'
 import '../styles/App.css';
 
 
@@ -71,10 +71,54 @@ import '../styles/App.css';
 //   }
 // }
 const App = () => {
+  const [data, setData] = useState();
+  const [additionalData, setAdditionalData] = useState(null);
+
+  function getData() {
+    if(additionalData !== null){
+      setAdditionalData(null);
+    }
+    fetch('https://randomuser.me/api/')
+    .then(response => response.json())
+    .then(json => {
+      setData(json.results[0]);
+  })};
+
+  function onClickHandler(event){
+    if(event.target.id === "age"){
+      setAdditionalData(data.dob.age);
+    }
+    if(event.target.id === "email"){
+      setAdditionalData(data.email);
+    }
+    if(event.target.id === "phone"){
+      setAdditionalData(data.phone);
+    }
+  }
+
+  useEffect(()=>{
+    getData();
+  },[])
   
   return (
     <div id="main">
-      
+      {data &&
+      <>
+        <span>{data.name.first} {data.name.last} </span>
+
+        <img src={data.picture.large} alt="" />
+
+        <div className="blank">{additionalData}</div>
+
+        <button id="age" data-attr="age" onClick={onClickHandler}>age</button>
+
+        <button id="email" data-attr="email" onClick={onClickHandler}>email</button>
+
+        <button id="phone" data-attr="phone" onClick={onClickHandler}>phone</button>
+
+        <button id="getUser" onClick={()=>getData()}>new-user</button>
+      </>
+      }
     </div>
   )
 }
